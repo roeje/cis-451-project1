@@ -4,7 +4,8 @@
 #
 # Modified by: Jesse Roe & Ben Commet
 # 9/20/15
-# Bugs:  Error with multiples (2, 3, 4) of 32768.
+# Bugs:  Error with overflow for ouputs that are positive and are larger than the max 16bit signed number. 
+# The ambigutity between large signed and unsigned causes these numbers to fail the overflow.
 #
 ##########################################################################
 
@@ -13,8 +14,8 @@ OUTPUT_SET_TYPE SHARED SignedHighLowMultiplierOutputSet
 
 NAMED_VALUE_LISTS
   # The product of any two lowPositive or lowNegative values will not overflow
-  lowPositive SIGNED(16) [ 0, 1, 2, 3, 2^2, 2^3, 2^5 - 1, 0x55, 0x5C, 2^7-1,  ]
-  lowNegative SIGNED(16) [ -2^7 + 1, -0x55, - 1, -1, -2, -3, -2^3, -2^5, -0x5C, -2^7-3, -2^7 ]
+  lowPositive SIGNED(16) [ 0, 1, 2^3, 2^5 - 1, 0x55, 0x5C, 2^7-1, 2^6, 2^6 + 1, 2^6 -5, ]
+  lowNegative SIGNED(16) [ -2^7 + 1, -0x55, -2^5, -0x5C, -2^7-3, -2^7, -2^6, -2^6 - 5, -2^5 - 1, ]
   allPositive SIGNED(16) [ lowPositive, 0x5555, 2^15 - 1, 2^14, 2^14 - 1, 2^13, 2^13 + 100 ]
   allNegative SIGNED(16) [ lowNegative, -2^15 + 1, -2^15, -2^14, -2^14 - 1, -2^14 + 100, -0x5555 ]
 

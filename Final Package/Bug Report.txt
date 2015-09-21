@@ -1,0 +1,7 @@
+1: The overflow on the multiplier will not accurately calculate overflow for large positively signed numbers. The ambiguity between these numbers
+and their unsigned counterparts causes errors in the way we use the High output for overflow calculation. 
+	Specifically, any positive signed combination that will return a 32bit answer that is larger than the 16bit signed representation size (32767)
+	will not register an overflow, even though the number cannot be accurately contained in 16bits.
+
+We tried a few methods to fix this issue, but eventually ran out of time. The test script does not contain any combinations that would cause this
+error, so that other values could be tested.

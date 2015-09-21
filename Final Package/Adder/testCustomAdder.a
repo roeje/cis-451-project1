@@ -1,0 +1,87 @@
+#> InputSetLoader: gvFormat.InputSetLoaderSimpleGVFormat
+
+#################################################################
+#
+# Modified By: Jesse Roe & Ben Commet
+# 9/20/2015
+# 1900 individual tests. Max Sim Time 80.
+#
+#################################################################
+
+OUTPUT_SET_TYPE SHARED SignedAdderOutputSet
+
+NAMED_VALUE_LISTS
+  # The sum of any two lowPositive or lowNegative values will not overflow
+  lowPositive SIGNED(16) [ 0, 1, 2, 3, 2^2, 2^5, 2^14 - 1, 2^13, 2^13 - 1, 2^13 + 1, 500 ]
+  lowNegative SIGNED(16) [ -1, -2, -3, -2^2, -2^5 -14512, -2^14 + 1, -2^13, -2^13 + 1, -2^13 - 1, -500 ]
+  allPositive SIGNED(16) [ lowPositive,  2^15 - 2, 2^15 - 1, 2^15 - 5 ]
+  allNegative SIGNED(16) [ lowNegative,  -2^15 + 1, -2^15, -2^15 + 5 ]
+
+###########################
+#
+# Positive and no overflow
+#
+###########################
+
+BEGIN positive_noOverflow
+  INPUTS
+    InputA SIGNED(16) lowPositive
+    InputB SIGNED(16) lowPositive
+    CarryIn [ 0, 1 ]
+  OUTPUTS
+    # Tell JLSCircuitTester to ignore value of Overflow output pin
+    Overflow EXCLUDE 
+
+
+###########################
+#
+# Negative and no overflow
+#
+###########################
+
+
+BEGIN negative_noOverflow_nn 
+   INPUTS
+     InputA SIGNED(16) lowNegative 
+     InputB SIGNED(16) lowNegative
+     CarryIn [ 0, 1 ]
+    OUTPUTS   
+       Overflow REQUIRE  
+
+BEGIN negative_noOverflow_pn # pos + neg can never overflow
+   INPUTS
+     InputA SIGNED(16) allPositive
+     InputB SIGNED(16) allNegative
+     CarryIn [ 0, 1 ]
+    OUTPUTS   
+       Overflow REQUIRE  
+
+BEGIN negative_noOverflow_np # neg + pos can never overflow
+   INPUTS
+     InputA SIGNED(16) allNegative
+     InputB SIGNED(16) allPositive
+     CarryIn [ 0, 1 ]
+    OUTPUTS   
+       Overflow REQUIRE  
+
+#########################
+#
+# Overflow
+#
+#########################
+
+BEGIN positive_overflow
+  INPUTS
+    InputA SIGNED(16) allPositive
+    InputB SIGNED(16) allPositive
+    CarryIn [0, 1]
+ OUTPUTS   
+    Overflow REQUIRE  
+
+BEGIN negative_overflow
+  INPUTS
+    InputA SIGNED(16) allNegative
+    InputB SIGNED(16) allNegative
+    CarryIn [0, 1]
+ OUTPUTS   
+    Overflow REQUIRE  

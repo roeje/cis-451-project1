@@ -2,7 +2,7 @@
 
 ###########################################################################
 #
-# Modified By: 
+# Modified By: Jesse Roe & Ben Commet
 # (C) 2007 Grand Valley State University
 #
 ##########################################################################
@@ -13,7 +13,7 @@ BEGIN add
     InputB SIGNED(16) [1, 2^15-1, 500]
     Op 0
   OUTPUTS
-    Output SIGNED(16) [2, -2^15, 501, -2, 2^15-4, 497, 17, 32783, 516 ]
+    Output SIGNED(16) [2, -2^15, 501, -2, 2^15-4, 497, 17, -32753, 516 ]
     Overflow [0, 1, 0, 0, 0, 0, 0, 1, 0 ]
 
 BEGIN subtract
@@ -31,43 +31,35 @@ BEGIN mult_noOverflow
     InputB SIGNED(16) [2^2, -3]
     Op 1
   OUTPUTS
-    Output [20, -15, 40, -30 ]
-    High [0, 1, 0, 1 ] 
+    Output SIGNED(16) [20, -15, 40, -30 ]
+    High [0x0000, 0xFFFF, 0x0000, 0xFFFF] 
     Overflow [0, 0, 0, 0]
 
 
 BEGIN mult_overflow2
  INPUTS 
-    InputA SIGNED(16) [1237, 10 ]
+    InputA SIGNED(16) [1237, 500 ]
     InputB SIGNED(16) [1251, -1257]
     Op 1
   OUTPUTS
-    Output [0x9cdf, 0x4623]
-    High [0x0017, 0xffe8] 
-    Overflow [1, 1]
-
-#
-# WARNING:  Be sure to test pairs of values that 
-# (1) Will make the subtractor overflow
-# (2) Will give different answers for less than and less than unsigned
-#
-# Hint:  If intentionally switching your op codes doesn't cause a failure, then
-# your tests aren't good enough.
-
+    Output SIGNED(16) [-25377, 17955, -29860, 26860 ]
+    High SIGNED(16) [23, -24, 9, -10] 
+    Overflow [1, 1, 1, 1]
+    
 BEGIN less_than_signed
   INPUTS
-    InputA SIGNED(16) 5
-    InputB SIGNED(16) [-1, 4, 6]
+    InputA SIGNED(16) [5, -32767, -6]
+    InputB SIGNED(16) [-1, 4, 6, 32767]
     Op 6
   OUTPUTS
-    Output [0, 0, 1]
-    Overflow 0
+    Output [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    Overflow [0, 0, 0, 0, 0, 1, 1, 1 , 0, 0, 0, 1]
 
 BEGIN less_than_unsigned
   INPUTS
-    InputA 5
-    InputB [1, 4, 6]
+    InputA [5, 32767]
+    InputB [1, 4, 6, 600, 30000, 32767]
     Op 7
   OUTPUTS
-    Output [0, 0, 1]
+    Output [0, 0, 1, 1, 1, 1, 0 ,0, 0, 0, 0, 0 ]
     Overflow 0
