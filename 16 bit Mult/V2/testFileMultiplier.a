@@ -1,11 +1,9 @@
 #> InputSetLoader: gvFormat.InputSetLoaderSimpleGVFormat
 ##########################################################################
 #
-# *Partially* test a 16-bit signed multiplier.  (The student is
-# responsible for designing a more comprehensive test.)
+# Test a 16-bit signed multiplier.
 #
-# Author: Zachary Kurmas
-# (C) 2012 Grand Valley State University
+# Modified By Jesse Roe and Ben Commet 
 #
 ##########################################################################
 
@@ -14,10 +12,10 @@ OUTPUT_SET_TYPE SHARED SignedHighLowMultiplierOutputSet
 
 NAMED_VALUE_LISTS
   # The product of any two lowPositive or lowNegative values will not overflow
-  lowPositive SIGNED(16) [ 0, 1, 0x55, 0x5C, 2^7-1 ]
-  lowNegative SIGNED(16) [ -2^7 + 1, -0x55, - 1 ]
-  allPositive SIGNED(16) [ lowPositive, 0x5555, 2^15 - 1 ]
-  allNegative SIGNED(16) [ lowNegative, -2^15 + 1, -0x5555 ]
+  lowPositive SIGNED(16) [ 0, 1, 0x55, 0x5C, 2^7-1, 100, 3, 25]
+  lowNegative SIGNED(16) [ -2^7 + 1, -0x55, - 1, -2, -100, -10, -9, 0]
+  allPositive SIGNED(16) [ lowPositive, 0x5555, 2^15 - 1]
+  allNegative SIGNED(16) [ lowNegative, -2^15 + 1, -0x5555, -2^15, -2^15 - 1]
 
 #########################
 #
@@ -29,18 +27,16 @@ BEGIN positive_noOverflow1
   INPUTS
     InputA SIGNED(16) lowPositive
     InputB SIGNED(16) lowPositive
-  OUTPUTS
-    # Tell JLSCircuitTester to ignore value of Overflow output pin
-    Overflow EXCLUDE 
+  OUTPUTS    
+    Overflow REQUIRE 
 
 # Multiply some numbers above 2^8 that won't overflow
 BEGIN positive_noOverflow2
   INPUTS
     InputA SIGNED(16) [2^14 - 1, 2^14 - 7] 
     InputB SIGNED(16) [0, 1, 2, 3, 6, 7]
-  OUTPUTS
-    # Tell JLSCircuitTester to ignore value of Overflow output pin
-    Overflow EXCLUDE 
+  OUTPUTS   
+    Overflow REQUIRE 
 
 
 ###########################
@@ -54,17 +50,15 @@ BEGIN all_noOverflow1
     InputA SIGNED(16) [lowPositive, lowNegative]
     InputB SIGNED(16) [lowPositive, lowNegative]
   OUTPUTS
-    # Tell JLSCircuitTester to ignore value of Overflow output pin
-    Overflow EXCLUDE 
+    Overflow REQUIRE
 
 # Multiply some numbers above 2^8 that won't overflow
 BEGIN all_noOverflow2
   INPUTS
-    InputA SIGNED(16) [2^14 - 1, 2^14 - 7, -2^14 + 1, -2^14 + 7]
-    InputB SIGNED(16) [0, 1, 2, 3, 6, 7, -1, -2, -3, -6, -7]
+    InputA SIGNED(16) [2^14 - 1, 2^14 - 7, -2^14 + 1, -2^14 + 7, 2^15-1, -2^15]
+    InputB SIGNED(16) [0, 1, 2, 3, 6, 7, -1, -2, -3, -6, -7, 1, 1]
   OUTPUTS
-    # Tell JLSCircuitTester to ignore value of Overflow output pin
-    Overflow EXCLUDE 
+    Overflow REQUIRE
 
 ###########################
 #
@@ -76,18 +70,27 @@ BEGIN positive_overflow
    INPUTS
      InputA SIGNED(16) allPositive
      InputB SIGNED(16) allPositive
+   OUTPUTS
+     Overflow REQUIRE
 
 BEGIN negative_overflow_pn
    INPUTS
      InputA SIGNED(16) allPositive
      InputB SIGNED(16) allNegative
+   OUTPUTS
+     Overflow REQUIRE
 
 BEGIN negative_overflow_np
    INPUTS
      InputA SIGNED(16) allNegative
      InputB SIGNED(16) allPositive
+   OUTPUTS
+     Overflow REQUIRE
 
 BEGIN negative_overflow_nn
    INPUTS
      InputA SIGNED(16) allNegative
      InputB SIGNED(16) allNegative
+   OUTPUTS
+     Overflow REQUIRE
+
